@@ -33,14 +33,30 @@ class Ipv4NetworkCalculator():
     def set_rede_broadcast(self):
         ip_bin = self.ip_decimal_para_binario(self.ip)
         ip_bin = ip_bin.replace('.', '')
-        print(ip_bin)
+        
+        rede = ''
+        broadcast = ''
+        for conta, bit in enumerate(ip_bin):
+            if conta < int(self.prefixo):
+                rede += str(bit)
+                broadcast += str(bit)
+            else:
+                rede += '0'
+                broadcast += '1' 
+        
+        print(rede, broadcast)
+
+    def ip_binario_para_decimal(self, ip=''):
+        novo_ip = str(int(ip[0:8], 2)) + '.'
+
+        print(novo_ip)
 
     def set_numero_ips(self):
         host_bits = 32-int(self.prefixo)
         self.numero_ips = pow(2, host_bits)
 
     def prefixo_da_mascara(self, mascara_bin):
-        mascara_bin = self.mascara_bin.replace('.', None)
+        mascara_bin = self.mascara_bin.replace('.', '')
         conta = 0
 
         for bit in mascara_bin:
