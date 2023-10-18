@@ -29,6 +29,19 @@ class Ipv4NetworkCalculator():
 
         self.set_numero_ips()
         self.set_rede_broadcast()
+        self.mascara_do_prefixo()
+
+    def mascara_do_prefixo(self):
+        mascara_bin = ''
+
+        for i in range(32):
+            if i < int(self.prefixo):
+                mascara_bin += '1'
+            else:
+                mascara_bin += '0'
+            
+        mascara_dec = self.ip_binario_para_decimal(mascara_bin)
+        self.mascara_bin = mascara_dec
 
     def set_rede_broadcast(self):
         ip_bin = self.ip_decimal_para_binario(self.ip)
@@ -44,42 +57,42 @@ class Ipv4NetworkCalculator():
                 rede += '0'
                 broadcast += '1' 
         
-        print(rede, broadcast)
+        self.rede = self.ip_binario_para_decimal(rede)
+        self.broadcast = self.ip_binario_para_decimal(broadcast)
 
     def ip_binario_para_decimal(self, ip=''):
         novo_ip = str(int(ip[0:8], 2)) + '.'
+        novo_ip = str(int(ip[8:16], 2)) + '.'
+        novo_ip = str(int(ip[16:24], 2)) + '.'
+        novo_ip = str(int(ip[24:32], 2))
 
-        print(novo_ip)
+        return(novo_ip)
 
     def set_numero_ips(self):
-        host_bits = 32-int(self.prefixo)
-        self.numero_ips = pow(2, host_bits)
+        host_bits = 32 - int(self.prefixo)
+        self.numero_ips: int = pow(2, host_bits)
 
     def prefixo_da_mascara(self, mascara_bin):
-        mascara_bin = self.mascara_bin.replace('.', '')
-        conta = 0
+        mascara_bin = str = self.mascara_bin.replace('.', '.')
+        conta: int = int(mascara_bin.count('1'))
 
-        for bit in mascara_bin:
-            if bit == '1':
-                conta =+ 1
-
-        self.prefixo = conta
+        self.prefixo: int = conta
             
-    def ip_decimal_para_binario(self, ip=''):
+    def ip_decimal_para_binario(self, ip: str = '')-> str:
             if not ip:
                 ip = self.ip
             
-            bloco_ip = ip.split(".")
-            ip_bin = []
+            bloco_ip: list = ip.split('.')
+            ip_bin: list = []
 
             for bloco in bloco_ip:
-                binario = bin(int(bloco))
-                binario = binario[2:].zfill(8)
+                binario: bin = bin(int(bloco))
+                binario: bin = binario[2:].zfill(8)
                 ip_bin.append(binario)
 
 
-            ip_bin = '.'.join(ip_bin)
-            print(ip_bin)
+            ip_bin: str = '.'.join(ip_bin)
+            return(ip_bin)
     
     def ip_tem_prefixo(self):
         ip_prefixo_regexp = re.compile('^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}/[0-9]{1,2}$')
@@ -99,5 +112,16 @@ class Ipv4NetworkCalculator():
             return True
         return False
     
+    def get_all(self):
+        return {        
+            'ip': self.ip,
+            'prefixo': self.prefixo,
+            'rede': self.rede,
+            'mascara': self.mascara,
+            'broadcast': self.broadcast,
+            'numero_ips': self.numero_ips, 
+        }
+
 if __name__ == '__main__':
-    ipv4 = Ipv4NetworkCalculator(ip='192.168.60.127', mascara='255.255.255.0')
+    ipv4 = Ipv4NetworkCalculator(ip='192.168.0.104', mascara='255.255.255.0')
+    print(ipv4.get_all())
